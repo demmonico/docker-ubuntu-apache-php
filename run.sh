@@ -13,7 +13,7 @@
 ##### run once
 if [ -f "${RUN_ONCE_FLAG}" ]; then
   # run script once
-  /bin/bash "${INSTALL_DIR}/run_once.sh"
+  source /run_once.sh
   # rm flag
   /bin/rm -f ${RUN_ONCE_FLAG}
 fi

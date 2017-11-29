@@ -21,6 +21,12 @@ ENV LC_ALL=en_US.UTF-8
 # for mc
 ENV TERM xterm
 
+# dummy inner location
+ENV DUMMY_DIR="/docker-dummy"
+
+# additional files required to run container (from version v2.0)
+ENV INSTALL_DIR="/docker-install"
+
 # project repo data
 ENV PROJECT_DIR=/var/www/html
 ENV PROJECT_ENV=Development
@@ -58,9 +64,6 @@ RUN apt-get update \
 
     # composer
     && curl https://getcomposer.org/installer | php -- && mv composer.phar /usr/local/bin/composer && chmod +x /usr/local/bin/composer \
-    # moved to run_once script
-    #&& composer global require "fxp/composer-asset-plugin:^1.2.0" \
-    #&& composer config -g github-oauth.github.com ${GITHUB_TOKEN} \
     # composer config if token exists
     && ${COMPOSER_CONFIG_STRING:-":"} \
 
@@ -81,39 +84,16 @@ EXPOSE 80
 # copy supervisord config file
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 
-# copy files to install container (@version v2.0)
-ARG INSTALL_DIR="/docker-install"
-ENV INSTALL_DIR="${INSTALL_DIR}"
-COPY install "${INSTALL_DIR}/"
-
-# prepare dummy
-ARG DUMMY=""
-ENV DUMMY_DIR="/docker-dummy"
-RUN if [ ! -z "${DUMMY}" ]; then cp -rf "${INSTALL_DIR}/${DUMMY}" "${DUMMY_DIR}"; fi
-
-# TODO add download by URL
-#ARG REPO_REGEX="(https?|git)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]"
-#ARG REPO_REGEX="((git|ssh|http(s)?)|(git@[\w\.]+))(:(//)?)([\w\.@\:/\-~]+)(\.git)(/)?"
-#RUN if [ ! -z "${DUMMY}" ]; then \
-#        IS_MATCH_REPO=$(echo "${DUMMY}" | grep -q -E "${REPO_REGEX}"); \
-#        echo $IS_MATCH_REPO; \
-#        if [ ! -z "${IS_MATCH_REPO}" ]; then \
-#            git clone "${DUMMY}" "${DUMMY_DIR}" "${DUMMY_DIR}"; \
-#        else \
-#            cp -rf "${INSTALL_DIR}/${DUMMY}" "${DUMMY_DIR}"; \
-#        fi; \
-#     fi
-
-
-# init run once flag
-ENV RUN_ONCE_FLAG="${INSTALL_DIR}/run_once"
-RUN tee "${RUN_ONCE_FLAG}" && chmod +x "${INSTALL_DIR}/run_once.sh"
+# copy and init run_once script
+COPY run_once.sh /run_once.sh
+ENV RUN_ONCE_FLAG="/run_once_flag"
+RUN tee "${RUN_ONCE_FLAG}" && chmod +x /run_once.sh
 
 # run custom run command if defined
-ARG CUSTON_RUN_COMMAND
-RUN ${CUSTON_RUN_COMMAND:-":"}
+ARG CUSTOM_BUILD_COMMAND
+RUN ${CUSTOM_BUILD_COMMAND:-":"}
 
-# init run script
-ARG RUN_SCRIPT="${INSTALL_DIR}/run.sh"
-RUN chmod +x "${RUN_SCRIPT}" && if [ ! -z "${INSTALL_DIR}" ]; then ln -s "${RUN_SCRIPT}" /run.sh; fi
+# copy and init run script
+COPY run.sh /run.sh
+RUN chmod +x /run.sh
 CMD ["/run.sh"]
