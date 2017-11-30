@@ -3,6 +3,9 @@
 ## Description
 
 Docker PHP-based image. Use as image for application container.
+Was developed for using with [Docker Manager](https://github.com/demmonico/docker-manager/). 
+But could be used separately.
+You could pull image from here and build locally either pull from [Docker Hub](https://hub.docker.com/r/demmonico/ubuntu-apache-php/) directly.
 
 
 ### Installs
@@ -40,7 +43,11 @@ Docker PHP-based image. Use as image for application container.
 
 ### Build
 
-Build image with PHP version specified.
+Build image with default PHP version
+```sh
+docker build -t demmonico/ubuntu-apache-php --no-cache .
+```
+or build image with PHP version specified.
 ```sh
 docker build -t demmonico/ubuntu-apache-php --build-arg PHP_VER=7.0 --no-cache .
 ```
@@ -68,10 +75,10 @@ docker push demmonico/ubuntu-apache-php:7.0
 
 ```sh
 FROM demmonico/ubuntu-apache-php:7.0
-
+  
 # optional copy files to install container
 COPY install "${INSTALL_DIR}/"
-
+  
 CMD ["/run.sh"]
 ```
 
@@ -80,18 +87,19 @@ CMD ["/run.sh"]
 ```sh
 ...
 image: demmonico/ubuntu-apache-php
-
-# optional
+# or
+build: local_path_to_dockerfile
+  
 environment:
+  # optional
   - PROJECT_ENV=Development
-
-# optional to provide custom proxy config
+  
 volumes:
   # webapp code
   - ./app/src:/var/www/html
   
-# provides values for ENV variables VIRTUAL_HOST, PROJECT, HOST_USER_NAME, HOST_USER_ID
 env_file:
+  # provides values for ENV variables VIRTUAL_HOST, PROJECT, HOST_USER_NAME, HOST_USER_ID
   - host.env
 ...
 ```

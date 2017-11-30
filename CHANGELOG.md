@@ -1,4 +1,4 @@
-# 2.0 (2017-11-29)
+# 2.0 (2017-11-30)
 
 - add CHANGELOG.md :)
 - refactor structure of image source folder, add version of image format, add new format version
