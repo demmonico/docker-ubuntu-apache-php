@@ -59,9 +59,6 @@ RUN apt-get update \
     # DB client
     && apt-get install -y mariadb-client \
 
-    # demonisation for docker
-    && apt-get install -y supervisor \
-
     # composer
     && curl https://getcomposer.org/installer | php -- && mv composer.phar /usr/local/bin/composer && chmod +x /usr/local/bin/composer \
     # composer config if token exists
@@ -73,16 +70,13 @@ RUN apt-get update \
     # clear apt etc
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/lib/mysql \
-    && mkdir -p /var/lock/apache2 /var/run/apache2 /var/log/supervisor
+    && mkdir -p /var/lock/apache2 /var/run/apache2
 
 
 EXPOSE 80
 
 
 ### UPDATE & RUN PROJECT
-
-# copy supervisord config file
-COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 # copy and init run_once script
 COPY run_once.sh /run_once.sh

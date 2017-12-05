@@ -104,5 +104,5 @@ cron
 
 
 
-#### run supervisord
-exec /usr/bin/supervisord -n
+#### entrypoint
+source /etc/apache2/envvars && exec /usr/sbin/apache2 -DFOREGROUND
