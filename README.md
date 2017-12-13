@@ -17,6 +17,7 @@ You could pull image from here and build locally either pull from [Docker Hub](h
 - PHP (see version in image tag)
 - PHP extensions/libs (mysql, xml, gd, mcrypt, mbstring, soap, intl, zip, curl)
 - mariadb-client
+- supervisor
 - composer
 - mc, rsync, htop
 
