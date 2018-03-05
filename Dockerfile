@@ -68,7 +68,7 @@ RUN apt-get update \
     && ${COMPOSER_CONFIG_STRING:-":"} \
 
     # mc, rsync and other utils
-    && apt-get -qq update && apt-get -qq -y install mc rsync htop \
+    && apt-get -qq update && apt-get -qq -y install mc rsync htop nano \
 
     # clear apt etc
     && apt-get clean \

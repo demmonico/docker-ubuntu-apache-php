@@ -1,3 +1,8 @@
+# 2.0.1 (2018-03-05)
+
+- add nano util to default installation
+
+
 # 2.0 (2017-11-30)
 
 - add CHANGELOG.md :)

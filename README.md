@@ -19,7 +19,7 @@ You could pull image from here and build locally either pull from [Docker Hub](h
 - mariadb-client
 - supervisor
 - composer
-- mc, rsync, htop
+- mc, rsync, htop, nano
 
 
 ### Build arguments
