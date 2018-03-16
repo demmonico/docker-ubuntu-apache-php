@@ -37,6 +37,14 @@ You could pull image from here and build locally either pull from [Docker Hub](h
 - PROJECT_ENV
 - REPOSITORY
 - REPO_BRANCH
+- DMC_ROOT_PASSWD (`run_once`)
+- DMC_DM_USER  (`run_once`)
+- DMC_DM_PASSWD  (`run_once`)
+- DMC_APP_APACHE_UPLOADMAXFILESIZE
+- DMC_APP_APACHE_POSTMAXSIZE
+- DMC_APP_APACHE_MEMORYLIMIT
+- DMC_APP_APACHE_MAXEXECTIME
+- DMC_APP_APACHE_MAXINPUTTIME
 
 
 ## Build && push

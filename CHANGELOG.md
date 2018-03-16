@@ -1,3 +1,10 @@
+# 3.0.0 (2018-03-15)
+
+- add default `root` user password
+- add special `dm` user to make `docker exec` under no-root user by default
+- add colored term prompt
+
+
 # 2.0.1 (2018-03-05)
 
 - add nano util to default installation

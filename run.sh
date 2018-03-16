@@ -6,7 +6,7 @@
 #
 # @author demmonico
 # @image ubuntu-apache-php
-# @version v2.0
+# @version v3.0
 
 
 
@@ -50,6 +50,78 @@ if [ -d "${DUMMY_DIR}" ]; then
     # start apache for dummy
     setDummyStatus "Starting apache";
     service apache2 start
+fi
+
+
+
+### tune system configs
+if [ ! -z "${DMC_APP_APACHE_UPLOADMAXFILESIZE}" ] || \
+    [ ! -z "${DMC_APP_APACHE_POSTMAXSIZE}" ] || \
+    [ ! -z "${DMC_APP_APACHE_MEMORYLIMIT}" ] || \
+    [ ! -z "${DMC_APP_APACHE_MAXEXECTIME}" ] || \
+    [ ! -z "${DMC_APP_APACHE_MAXINPUTTIME}" ]
+then
+    PHP_VER="$( php -v | grep '(cli)' | sed -E "s/^PHP\s([[:digit:]]\.[[:digit:]]).*/\1/g" )"
+
+    #cat /etc/php/7.0/apache2/php.ini | grep 'post_max_size\|upload_max_filesize\|memory_limit'
+    declare -a PHP_INI_FILES=("/etc/php/${PHP_VER}/apache2/php.ini")
+
+    isRestartApache=''
+    for PHP_INI_FILE in "${PHP_INI_FILES[@]}"
+    do
+        if [ -f "${PHP_INI_FILE}" ]; then
+            source "${INSTALL_DIR}/tuner.sh"
+
+            #cat ${PHP_INI_FILE} | grep 'post_max_size\|upload_max_filesize\|memory_limit\|max_execution_time\|max_input_time'
+
+            # upload_max_filesize
+            if [ ! -z "${DMC_APP_APACHE_UPLOADMAXFILESIZE}" ]; then
+                tune_errors="$( applyPhpUploadMaxFileSize "${PHP_INI_FILE}" "${DMC_APP_APACHE_UPLOADMAXFILESIZE}" )"
+
+                # TODO-dep tune logs
+                [ ! -z "${tune_errors}" ] && echo -e "[$( date '+%F %T.%N %Z' )] ${tune_errors}" >> /tmp/dm.log
+            fi
+
+            # post_max_size
+            if [ ! -z "${DMC_APP_APACHE_POSTMAXSIZE}" ]; then
+                tune_errors="$( applyPhpPostMaxSize "${PHP_INI_FILE}" "${DMC_APP_APACHE_POSTMAXSIZE}" )"
+
+                # TODO-dep tune logs
+                [ ! -z "${tune_errors}" ] && echo -e "[$( date '+%F %T.%N %Z' )] ${tune_errors}" >> /tmp/dm.log
+            fi
+
+            # memory_limit
+            if [ ! -z "${DMC_APP_APACHE_MEMORYLIMIT}" ]; then
+                tune_errors="$( applyPhpMemoryLimit "${PHP_INI_FILE}" "${DMC_APP_APACHE_MEMORYLIMIT}" )"
+
+                # TODO-dep tune logs
+                [ ! -z "${tune_errors}" ] && echo -e "[$( date '+%F %T.%N %Z' )] ${tune_errors}" >> /tmp/dm.log
+            fi
+
+            # max_execution_time
+            if [ ! -z "${DMC_APP_APACHE_MAXEXECTIME}" ]; then
+                tune_errors="$( applyPhpMaxExecTime "${PHP_INI_FILE}" "${DMC_APP_APACHE_MAXEXECTIME}" )"
+
+                # TODO-dep tune logs
+                [ ! -z "${tune_errors}" ] && echo -e "[$( date '+%F %T.%N %Z' )] ${tune_errors}" >> /tmp/dm.log
+            fi
+
+            # max_input_time
+            if [ ! -z "${DMC_APP_APACHE_MAXINPUTTIME}" ]; then
+                tune_errors="$( applyPhpMaxInputTime "${PHP_INI_FILE}" "${DMC_APP_APACHE_MAXINPUTTIME}" )"
+
+                # TODO-dep tune logs
+                [ ! -z "${tune_errors}" ] && echo -e "[$( date '+%F %T.%N %Z' )] ${tune_errors}" >> /tmp/dm.log
+            fi
+
+            #cat ${PHP_INI_FILE} | grep 'post_max_size\|upload_max_filesize\|memory_limit\|max_execution_time\|max_input_time'
+
+            isRestartApache='yes'
+        fi
+    done
+
+    # restart Apache
+    [ ! -z "${isRestartApache}" ] && sudo service apache2 restart
 fi
 
 

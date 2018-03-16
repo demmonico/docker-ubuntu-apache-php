@@ -4,7 +4,7 @@
 #
 # @author demmonico
 # @image ubuntu-apache-php
-# @version v2.0
+# @version v3.0
 
 
 FROM ubuntu:14.04
@@ -39,28 +39,28 @@ ENV REPO_BRANCH=master
 ARG PHP_VER=7.0
 ARG GITHUB_TOKEN
 ARG COMPOSER_CONFIG_STRING=${GITHUB_TOKEN:+"composer config -g github-oauth.github.com ${GITHUB_TOKEN}"}
-RUN apt-get update \
-    && apt-get -y install software-properties-common \
+RUN apt-get -yqq update \
+    && apt-get -yqq install software-properties-common \
     && add-apt-repository ppa:ondrej/php -y \
-    && apt-get update \
+    && apt-get -yqq update \
 
     # apache, curl, zip, unzip, git
-    && apt-get install -y --force-yes  --no-install-recommends apache2 curl zip unzip git \
+    && apt-get install -yqq --force-yes  --no-install-recommends apache2 curl zip unzip git \
     # ssh client for git
-    && apt-get install -y openssh-client \
+    && apt-get install -yqq openssh-client \
     # configure apache
     && ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/ \
     && sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf \
 
     # php
-    && apt-get install -y --force-yes  --no-install-recommends php${PHP_VER} libapache2-mod-php${PHP_VER} \
+    && apt-get install -yqq --force-yes  --no-install-recommends php${PHP_VER} libapache2-mod-php${PHP_VER} \
         php${PHP_VER}-mysql php${PHP_VER}-xml php${PHP_VER}-gd php${PHP_VER}-mcrypt php${PHP_VER}-mbstring php${PHP_VER}-soap php${PHP_VER}-intl php${PHP_VER}-zip php${PHP_VER}-curl \
 
     # DB client
-    && apt-get install -y mariadb-client \
+    && apt-get install -yqq mariadb-client \
 
     # demonisation for docker
-    && apt-get install -y supervisor \
+    && apt-get install -yqq supervisor \
 
     # composer
     && curl https://getcomposer.org/installer | php -- && mv composer.phar /usr/local/bin/composer && chmod +x /usr/local/bin/composer \
@@ -68,7 +68,7 @@ RUN apt-get update \
     && ${COMPOSER_CONFIG_STRING:-":"} \
 
     # mc, rsync and other utils
-    && apt-get -qq update && apt-get -qq -y install mc rsync htop nano \
+    && apt-get -yqq install mc rsync htop nano \
 
     # clear apt etc
     && apt-get clean \
@@ -80,6 +80,10 @@ EXPOSE 80
 
 
 ### UPDATE & RUN PROJECT
+
+# copy files to install container
+COPY install "${INSTALL_DIR}/"
+RUN find "${INSTALL_DIR}" -type f -iname "*.sh" -exec chmod +x {} \;
 
 # copy supervisord config file
 COPY supervisord.conf /etc/supervisor/supervisord.conf
