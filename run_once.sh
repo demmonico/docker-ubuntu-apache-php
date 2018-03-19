@@ -20,7 +20,11 @@ usermod -u ${HOST_USER_ID} www-data && groupmod -g ${HOST_USER_ID} www-data
 
 # add dm user, set password, add to www-data group
 DMC_DM_USER="${DMC_DM_USER:-dm}"
-useradd -m ${DMC_DM_USER} && usermod -a -G www-data ${DMC_DM_USER} && echo "${DMC_DM_USER}:${DMC_DM_PASSWD:-${DMC_DM_USER}Passwd}" | chpasswd
+useradd -m ${DMC_DM_USER} && \
+    usermod -a -G root ${DMC_DM_USER} && \
+    usermod -a -G www-data ${DMC_DM_USER} && \
+    adduser dm sudo && \
+    echo "${DMC_DM_USER}:${DMC_DM_PASSWD:-${DMC_DM_USER}Passwd}" | chpasswd
 
 
 
