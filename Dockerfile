@@ -22,23 +22,23 @@ ENV LC_ALL=en_US.UTF-8
 ENV TERM xterm
 
 # dummy inner location
-ENV DUMMY_DIR="/docker-dummy"
+ENV DMC_APP_APACHE_DUMMY_DIR="/dm-app-dummy"
 
-# additional files required to run container (from version v2.0)
-ENV INSTALL_DIR="/docker-install"
+# additional files required to run container
+ENV DMC_INSTALL_DIR="/dm-install"
 
 # project repo data
-ENV PROJECT_DIR=/var/www/html
-ENV PROJECT_ENV=Development
-ENV REPOSITORY=''
-ENV REPO_BRANCH=master
+ENV DMC_APP_PROJECT_DIR=/var/www/html
+ENV DM_PROJECT_ENV=Development
+ENV DM_REPOSITORY=''
+ENV DM_REPO_BRANCH=master
 
 
 
 ### INSTALL SOFTWARE
-ARG PHP_VER=7.0
-ARG GITHUB_TOKEN
-ARG COMPOSER_CONFIG_STRING=${GITHUB_TOKEN:+"composer config -g github-oauth.github.com ${GITHUB_TOKEN}"}
+ARG DMB_APP_PHP_VER=7.0
+ARG DMB_APP_GITHUB_TOKEN
+ARG COMPOSER_CONFIG_STRING=${DMB_APP_GITHUB_TOKEN:+"composer config -g github-oauth.github.com ${DMB_APP_GITHUB_TOKEN}"}
 RUN apt-get -yqq update \
     && apt-get -yqq install software-properties-common \
     && add-apt-repository ppa:ondrej/php -y \
@@ -53,8 +53,10 @@ RUN apt-get -yqq update \
     && sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf \
 
     # php
-    && apt-get install -yqq --force-yes  --no-install-recommends php${PHP_VER} libapache2-mod-php${PHP_VER} \
-        php${PHP_VER}-mysql php${PHP_VER}-xml php${PHP_VER}-gd php${PHP_VER}-mcrypt php${PHP_VER}-mbstring php${PHP_VER}-soap php${PHP_VER}-intl php${PHP_VER}-zip php${PHP_VER}-curl \
+    && apt-get install -yqq --force-yes  --no-install-recommends php${DMB_APP_PHP_VER} libapache2-mod-php${DMB_APP_PHP_VER} \
+        php${DMB_APP_PHP_VER}-mysql php${DMB_APP_PHP_VER}-mcrypt php${DMB_APP_PHP_VER}-mbstring \
+        php${DMB_APP_PHP_VER}-xml php${DMB_APP_PHP_VER}-gd php${DMB_APP_PHP_VER}-intl \
+        php${DMB_APP_PHP_VER}-soap php${DMB_APP_PHP_VER}-zip php${DMB_APP_PHP_VER}-curl \
 
     # DB client
     && apt-get install -yqq mariadb-client \
@@ -82,20 +84,20 @@ EXPOSE 80
 ### UPDATE & RUN PROJECT
 
 # copy files to install container
-COPY install "${INSTALL_DIR}/"
-RUN find "${INSTALL_DIR}" -type f -iname "*.sh" -exec chmod +x {} \;
+COPY install "${DMC_INSTALL_DIR}/"
+RUN find "${DMC_INSTALL_DIR}" -type f -iname "*.sh" -exec chmod +x {} \;
 
 # copy supervisord config file
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 # copy and init run_once script
 COPY run_once.sh /run_once.sh
-ENV RUN_ONCE_FLAG="/run_once_flag"
-RUN tee "${RUN_ONCE_FLAG}" && chmod +x /run_once.sh
+ENV DMC_RUN_ONCE_FLAG="/run_once_flag"
+RUN tee "${DMC_RUN_ONCE_FLAG}" && chmod +x /run_once.sh
 
 # run custom run command if defined
-ARG CUSTOM_BUILD_COMMAND
-RUN ${CUSTOM_BUILD_COMMAND:-":"}
+ARG DMB_CUSTOM_BUILD_COMMAND
+RUN ${DMB_CUSTOM_BUILD_COMMAND:-":"}
 
 # copy and init run script
 COPY run.sh /run.sh

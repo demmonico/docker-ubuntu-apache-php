@@ -11,40 +11,40 @@
 
 
 ##### run once
-if [ -f "${RUN_ONCE_FLAG}" ]; then
+if [ -f "${DMC_RUN_ONCE_FLAG}" ]; then
   # run script once
   source /run_once.sh
   # rm flag
-  /bin/rm -f ${RUN_ONCE_FLAG}
+  /bin/rm -f ${DMC_RUN_ONCE_FLAG}
 fi
 
 
 
 ##### run
-cd ${PROJECT_DIR}
+cd ${DMC_APP_PROJECT_DIR}
 
 
 
 ### set dummy if defined
-PROJECT_DUMMY_DIR="$PROJECT_DIR/dummy"
+PROJECT_DUMMY_DIR="${DMC_APP_PROJECT_DIR}/dummy"
 
 function setDummyStatus
 {
     local msg=$@;
-    if [ -n "$msg" ] && [ -d "${DUMMY_DIR}" ]; then
+    if [ -n "$msg" ] && [ -d "${DMC_APP_APACHE_DUMMY_DIR}" ]; then
         ( echo "$msg"; ) | sudo tee ${PROJECT_DUMMY_DIR}/status
     fi;
 }
 
-if [ -d "${DUMMY_DIR}" ]; then
+if [ -d "${DMC_APP_APACHE_DUMMY_DIR}" ]; then
 
     # replace htaccess files
     if [ ! -d "${PROJECT_DUMMY_DIR}" ]; then
-        cp -rf ${DUMMY_DIR} ${PROJECT_DUMMY_DIR}
-        if [ -f "${PROJECT_DIR}/.htaccess" ]; then
-            cp ${PROJECT_DIR}/.htaccess ${PROJECT_DIR}/real.htaccess
+        cp -rf ${DMC_APP_APACHE_DUMMY_DIR} ${PROJECT_DUMMY_DIR}
+        if [ -f "${DMC_APP_PROJECT_DIR}/.htaccess" ]; then
+            cp ${DMC_APP_PROJECT_DIR}/.htaccess ${DMC_APP_PROJECT_DIR}/real.htaccess
         fi
-        yes | cp -rf ${DUMMY_DIR}/.htaccess ${PROJECT_DIR}/.htaccess
+        yes | cp -rf ${DMC_APP_APACHE_DUMMY_DIR}/.htaccess ${DMC_APP_PROJECT_DIR}/.htaccess
     fi
 
     # start apache for dummy
@@ -70,7 +70,7 @@ then
     for PHP_INI_FILE in "${PHP_INI_FILES[@]}"
     do
         if [ -f "${PHP_INI_FILE}" ]; then
-            source "${INSTALL_DIR}/tuner.sh"
+            source "${DMC_INSTALL_DIR}/tuner.sh"
 
             #cat ${PHP_INI_FILE} | grep 'post_max_size\|upload_max_filesize\|memory_limit\|max_execution_time\|max_input_time'
 
@@ -127,7 +127,7 @@ fi
 
 
 ### run custom script if exists
-CUSTOM_SCRIPT="${INSTALL_DIR}/custom.sh"
+CUSTOM_SCRIPT="${DMC_INSTALL_DIR}/custom.sh"
 if [ -f ${CUSTOM_SCRIPT} ]; then
     chmod +x ${CUSTOM_SCRIPT} && source ${CUSTOM_SCRIPT}
 fi
@@ -148,18 +148,18 @@ fi
 
 
 ### stop dummy
-if [ -d "${DUMMY_DIR}" ]; then
+if [ -d "${DMC_APP_APACHE_DUMMY_DIR}" ]; then
 
     # stop apache
     setDummyStatus "Starting container";
     service apache2 stop
 
     # rm dummy
-    if [ -f "${PROJECT_DIR}/real.htaccess" ]; then
-        yes | cp -rf ${PROJECT_DIR}/real.htaccess ${PROJECT_DIR}/.htaccess
-        /bin/rm -f ${PROJECT_DIR}/real.htaccess
+    if [ -f "${DMC_APP_PROJECT_DIR}/real.htaccess" ]; then
+        yes | cp -rf ${DMC_APP_PROJECT_DIR}/real.htaccess ${DMC_APP_PROJECT_DIR}/.htaccess
+        /bin/rm -f ${DMC_APP_PROJECT_DIR}/real.htaccess
     else
-        /bin/rm -f ${PROJECT_DIR}/.htaccess
+        /bin/rm -f ${DMC_APP_PROJECT_DIR}/.htaccess
     fi
     /bin/rm -rf ${PROJECT_DUMMY_DIR}
 fi
@@ -167,7 +167,7 @@ fi
 
 
 ### FIX permissions
-chown -R www-data:www-data ${PROJECT_DIR}
+chown -R www-data:www-data ${DMC_APP_PROJECT_DIR}
 
 
 

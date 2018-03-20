@@ -24,22 +24,22 @@ You could pull image from here and build locally either pull from [Docker Hub](h
 
 ### Build arguments
 
-- PHP_VER (default 7.0)
-- GITHUB_TOKEN (if defined then composer will be configured due this token)
-- CUSTOM_BUILD_COMMAND (will run if defined in the end of build)
+- DMB_APP_PHP_VER (default 7.0)
+- DMB_APP_GITHUB_TOKEN (if defined then composer will be configured due this token)
+- DMB_CUSTOM_BUILD_COMMAND (will run if defined in the end of build)
 
 
 ### Environment variables
 
-- DUMMY_DIR
-- INSTALL_DIR
-- PROJECT_DIR
-- PROJECT_ENV
-- REPOSITORY
-- REPO_BRANCH
-- DMC_ROOT_PASSWD (`run_once`)
-- DMC_DM_USER  (`run_once`)
-- DMC_DM_PASSWD  (`run_once`)
+- DM_PROJECT_ENV
+- DM_REPOSITORY
+- DM_REPO_BRANCH
+- DMC_APP_APACHE_DUMMY_DIR (on `run`, if dir exists)
+- DMC_INSTALL_DIR
+- DMC_APP_PROJECT_DIR (on `run`)
+- DMC_ROOT_PASSWD (on `run_once`)
+- DMC_DM_USER  (on `run_once`)
+- DMC_DM_PASSWD  (on `run_once`)
 - DMC_APP_APACHE_UPLOADMAXFILESIZE
 - DMC_APP_APACHE_POSTMAXSIZE
 - DMC_APP_APACHE_MEMORYLIMIT
@@ -57,7 +57,7 @@ docker build -t demmonico/ubuntu-apache-php --no-cache .
 ```
 or build image with PHP version specified.
 ```sh
-docker build -t demmonico/ubuntu-apache-php --build-arg PHP_VER=7.0 --no-cache .
+docker build -t demmonico/ubuntu-apache-php --build-arg DMB_APP_PHP_VER=7.0 --no-cache .
 ```
 
 ### Make tag
@@ -85,7 +85,7 @@ docker push demmonico/ubuntu-apache-php:7.0
 FROM demmonico/ubuntu-apache-php:7.0
   
 # optional copy files to install container
-COPY install "${INSTALL_DIR}/"
+COPY install "${DMC_INSTALL_DIR}/"
   
 CMD ["/run.sh"]
 ```
@@ -100,14 +100,14 @@ build: local_path_to_dockerfile
   
 environment:
   # optional
-  - PROJECT_ENV=Development
+  - DM_PROJECT_ENV=Development
   
 volumes:
   # webapp code
   - ./app/src:/var/www/html
   
 env_file:
-  # provides values for ENV variables VIRTUAL_HOST, PROJECT, HOST_USER_NAME, HOST_USER_ID
+  # provides values for ENV variables VIRTUAL_HOST, DM_PROJECT, DM_HOST_USER_NAME, DM_HOST_USER_ID
   - host.env
 ...
 ```

@@ -16,7 +16,7 @@
 echo "root:${DMC_ROOT_PASSWD:-rootPasswd}" | chpasswd
 
 # set apache user ID equal to host's owner ID
-usermod -u ${HOST_USER_ID} www-data && groupmod -g ${HOST_USER_ID} www-data
+usermod -u ${DM_HOST_USER_ID} www-data && groupmod -g ${DM_HOST_USER_ID} www-data
 
 # add dm user, set password, add to www-data group
 DMC_DM_USER="${DMC_DM_USER:-dm}"
@@ -45,7 +45,7 @@ done
 
 
 ### run custom script if exists
-CUSTOM_ONCE_SCRIPT="${INSTALL_DIR}/custom_once.sh"
+CUSTOM_ONCE_SCRIPT="${DMC_INSTALL_DIR}/custom_once.sh"
 if [ -f ${CUSTOM_ONCE_SCRIPT} ]; then
     chmod +x ${CUSTOM_ONCE_SCRIPT} && source ${CUSTOM_ONCE_SCRIPT}
 fi
