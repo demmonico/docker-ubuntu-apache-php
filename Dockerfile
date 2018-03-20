@@ -51,6 +51,7 @@ RUN apt-get -yqq update \
     # configure apache
     && ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/ \
     && sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf \
+    && mkdir -p /var/lock/apache2 /var/run/apache2 \
 
     # php
     && apt-get install -yqq --force-yes  --no-install-recommends php${DMB_APP_PHP_VER} libapache2-mod-php${DMB_APP_PHP_VER} \
@@ -62,7 +63,7 @@ RUN apt-get -yqq update \
     && apt-get install -yqq mariadb-client \
 
     # demonisation for docker
-    && apt-get install -yqq supervisor \
+    && apt-get install -yqq supervisor && mkdir -p /var/log/supervisor \
 
     # composer
     && curl https://getcomposer.org/installer | php -- && mv composer.phar /usr/local/bin/composer && chmod +x /usr/local/bin/composer \
@@ -70,18 +71,13 @@ RUN apt-get -yqq update \
     && ${COMPOSER_CONFIG_STRING:-":"} \
 
     # mc, rsync and other utils
-    && apt-get -yqq install mc rsync htop nano \
+    && apt-get -yqq install mc rsync htop nano
 
-    # clear apt etc
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/lib/mysql \
-    && mkdir -p /var/lock/apache2 /var/run/apache2 /var/log/supervisor
-
-
-EXPOSE 80
 
 
 ### UPDATE & RUN PROJECT
+
+EXPOSE 80
 
 # copy files to install container
 COPY install "${DMC_INSTALL_DIR}/"
@@ -98,6 +94,14 @@ RUN tee "${DMC_RUN_ONCE_FLAG}" && chmod +x /run_once.sh
 # run custom run command if defined
 ARG DMB_CUSTOM_BUILD_COMMAND
 RUN ${DMB_CUSTOM_BUILD_COMMAND:-":"}
+
+
+
+# clean temporary and unused folders and caches
+RUN apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/lib/mysql
+
+
 
 # copy and init run script
 COPY run.sh /run.sh
