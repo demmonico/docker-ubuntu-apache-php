@@ -45,6 +45,8 @@ You could pull image from here and build locally either pull from [Docker Hub](h
 - DMC_APP_APACHE_MEMORYLIMIT
 - DMC_APP_APACHE_MAXEXECTIME
 - DMC_APP_APACHE_MAXINPUTTIME
+- DMC_CUSTOM_RUN_COMMAND
+- DMC_CUSTOM_RUNONCE_COMMAND
 
 
 ## Build && push
@@ -99,8 +101,10 @@ image: demmonico/ubuntu-apache-php
 build: local_path_to_dockerfile
   
 environment:
-  # optional
+  # optional - define environment's name
   - DM_PROJECT_ENV=Development
+  # optional - add link to internal domain to the /etc/hosts file for container named dm000main_app_1
+  - DMC_CUSTOM_RUN_COMMAND=bash -c `echo "$$( getent hosts dm000main_app_1 | awk '{ print $$1 }' ) dc" >> /etc/hosts`
   
 volumes:
   # webapp code

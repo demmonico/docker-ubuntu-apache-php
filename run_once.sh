@@ -6,7 +6,7 @@
 #
 # @author demmonico
 # @image ubuntu-apache-php
-# @version v3.0
+# @version v3.1
 
 
 
@@ -48,4 +48,7 @@ done
 CUSTOM_ONCE_SCRIPT="${DMC_INSTALL_DIR}/custom_once.sh"
 if [ -f ${CUSTOM_ONCE_SCRIPT} ]; then
     chmod +x ${CUSTOM_ONCE_SCRIPT} && source ${CUSTOM_ONCE_SCRIPT}
+fi
+if [ ! -z "${DMC_CUSTOM_RUNONCE_COMMAND}" ]; then
+    eval ${DMC_CUSTOM_RUNONCE_COMMAND}
 fi
