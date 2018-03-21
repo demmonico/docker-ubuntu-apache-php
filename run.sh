@@ -138,12 +138,12 @@ fi
 
 
 # wait for db
-if [ ! -z "${DB_HOST}" ]
+if [ ! -z "${DMC_DB_SERVICE}" ]
 then
     # update status
     setDummyStatus "Wait for db container";
     # wait
-    while ! mysqladmin ping -h"${DB_HOST}" --silent; do
+    while ! mysqladmin ping -h"${DMC_DB_SERVICE}" --silent; do
         sleep 1
     done
 fi
