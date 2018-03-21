@@ -29,14 +29,18 @@ useradd -m ${DMC_DM_USER} && \
 
 
 # colored term
-PS1="PS1='\[\033[01;35m\]\t\[\033[00m\] \${debian_chroot:+(\$debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\] \[\033[01;35m\]\${VIRTUAL_HOST}\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\\$ '"
+#PS1="PS1='\[\033[01;35m\]\t\[\033[00m\] \${debian_chroot:+(\$debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\] \[\033[01;35m\]\${VIRTUAL_HOST}\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\\$ '"
+VC='\[\033[01;35m\]'
+GC='\[\033[01;32m\]'
+BC='\[\033[01;34m\]'
+NC='\[\033[00m\]'
+PS1="PS1='${VC}\t${NC} \${debian_chroot:+(\$debian_chroot)}${GC}\u@\${DMC_EXEC_NAME:-\${VIRTUAL_HOST}}${NC} ${VC}\h${NC}:${BC}\w${NC}\\$ '"
 # prepare to sed
 PS1=$( echo ${PS1} | sed 's/\\/\\\\/g' )
 # replace colors
 declare -a RC_FILES=("/root/.bashrc" "/home/${DMC_DM_USER}/.bashrc")
 for RC_FILE in "${RC_FILES[@]}"
 do
-#    echo "${RC_FILE}"
     START=$( cat ${RC_FILE} | sed "/^# set a fancy prompt/,\$d" )
     END=$( cat ${RC_FILE} | sed "/^# enable color support/,\$!d" )
     echo -e "${START}\n\n# set a fancy prompt\n${PS1}\n\n${END}" > ${RC_FILE}
