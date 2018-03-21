@@ -1,8 +1,14 @@
-# 3.0.0 (2018-03-15)
+# 3.2.0 (2018-03-21)
+
+- small fixes
+
+
+# 3.0.0 (2018-03-21)
 
 - add default `root` user password
 - add special `dm` user to make `docker exec` under no-root user by default
 - add colored term prompt
+- DM* prefixed and renamed
 
 
 # 2.0.1 (2018-03-05)
