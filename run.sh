@@ -54,6 +54,23 @@ fi
 
 
 
+### add domains to the /etc/hosts
+if [ ! -z "${DMC_CUSTOM_ADD_HOSTS}" ]; then
+    oldIFS="${IFS}"
+    IFS=';' read -r -a HOSTS <<< "${DMC_CUSTOM_ADD_HOSTS}"
+    IFS="${oldIFS}"
+    for HOST in ${HOSTS[@]}
+    do
+        HOST_IP="$( echo "${HOST}" | sed -r 's/:.+$//' )"
+        HOST_NAME="$( echo "${HOST}" | sed -r 's/^.+://' )"
+        if [ ! -z "${HOST_IP}" ] && [ ! -z "${HOST_NAME}" ]; then
+            source ${DMC_INSTALL_DIR}/exec_cmd_hosts_add.sh ${HOST_IP} ${HOST_NAME}
+        fi
+    done
+fi
+
+
+
 ### tune system configs
 if [ ! -z "${DMC_APP_APACHE_UPLOADMAXFILESIZE}" ] || \
     [ ! -z "${DMC_APP_APACHE_POSTMAXSIZE}" ] || \
