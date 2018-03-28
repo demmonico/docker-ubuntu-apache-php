@@ -106,7 +106,12 @@ environment:
   # optional - define environment's name
   - DM_PROJECT_ENV=Development
   # optional - add link to internal domain to the /etc/hosts file for container named dm000main_app_1
-  - DMC_CUSTOM_RUN_COMMAND=bash -c `echo "$$( getent hosts dm000main_app_1 | awk '{ print $$1 }' ) dc" >> /etc/hosts`
+  # recommended
+  - DMC_CUSTOM_ADD_HOSTS=container_name:example.com
+  # or
+  - DMC_CUSTOM_ADD_HOSTS=172.19.0.3:example.com
+  # or alternatively (common exec custom command)
+  - DMC_CUSTOM_RUN_COMMAND=bash -c `echo "$$( getent hosts container_name | awk '{ print $$1 }' ) example.com" >> /etc/hosts`
   
 volumes:
   # webapp code
