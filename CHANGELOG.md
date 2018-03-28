@@ -1,6 +1,11 @@
-# 3.2.0 (2018-03-21)
+# 3.3.0 (2018-03-28)
 
 - small fixes
+- add env var `DMC_CUSTOM_RUN_COMMAND` and `DMC_CUSTOM_RUNONCE_COMMAND`
+- add env var `DMC_EXEC_NAME`
+- add env vars for updating PHP limits
+- add lib scripts for updating /etc/hosts
+- add env var `DMC_CUSTOM_ADD_HOSTS` for updating /etc/hosts
 
 
 # 3.0.0 (2018-03-21)
