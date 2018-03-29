@@ -37,9 +37,11 @@ ENV DM_REPO_BRANCH=master
 
 ### INSTALL SOFTWARE
 ARG DMB_APP_PHP_VER=7.0
+ENV DMB_APP_PHP_CRYPT_EXT="php${DMB_APP_PHP_VER}-mcrypt"
 ARG DMB_APP_GITHUB_TOKEN
 ARG COMPOSER_CONFIG_STRING=${DMB_APP_GITHUB_TOKEN:+"composer config -g github-oauth.github.com ${DMB_APP_GITHUB_TOKEN}"}
-RUN apt-get -yqq update \
+RUN if [ ! "${DMB_APP_PHP_VER}" = "7.0" ] && [ ! "${DMB_APP_PHP_VER}" = "7.1" ] ; then DMB_APP_PHP_CRYPT_EXT="openssl" ; fi ; \
+    apt-get -yqq update \
     && apt-get -yqq install software-properties-common \
     && add-apt-repository ppa:ondrej/php -y \
     && apt-get -yqq update \
@@ -55,7 +57,7 @@ RUN apt-get -yqq update \
 
     # php
     && apt-get install -yqq --force-yes  --no-install-recommends php${DMB_APP_PHP_VER} libapache2-mod-php${DMB_APP_PHP_VER} \
-        php${DMB_APP_PHP_VER}-mysql php${DMB_APP_PHP_VER}-mcrypt php${DMB_APP_PHP_VER}-mbstring \
+        php${DMB_APP_PHP_VER}-mysql php${DMB_APP_PHP_VER}-mbstring ${DMB_APP_PHP_CRYPT_EXT} \
         php${DMB_APP_PHP_VER}-xml php${DMB_APP_PHP_VER}-gd php${DMB_APP_PHP_VER}-intl \
         php${DMB_APP_PHP_VER}-soap php${DMB_APP_PHP_VER}-zip php${DMB_APP_PHP_VER}-curl \
 
